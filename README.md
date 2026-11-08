@@ -25,3 +25,10 @@ The trade-off: the watcher is deliberately pull-based. It does not spawn a threa
 A missing key and an empty-string key are treated as different observations. `DriftEvent.old_value` / `new_value` use `None` to mean "the key was absent from the environment", so a real empty string (`""`) is reported as the string `""`, not as `None`. If your code maps "unset" and "empty" to the same thing, normalise before comparing — this library will not collapse them for you.
 
 The first `tick()` establishes the baseline and never emits events, even if the environment changed between construction and that first call.
+
+## Design notes
+
+The window stores values eagerly rather than keeping running aggregates. Running
+sums drift with floating point over long streams, and recomputing from a small
+buffer is cheap enough that the drift is not worth the speed.
+
